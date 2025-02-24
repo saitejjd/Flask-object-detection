@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Vision Assistant</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <header>
+        <nav class="container">
+            <div class="brand">AI Vision</div>
+            <button class="btn live-btn" onclick="toggleCamera()">Toggle Camera</button>
+        </nav>
+    </header>
+
+    <div class="camera-panel" id="cameraPanel">
+        <div class="panel-header">
+            <span>Live Detection</span>
+            <button class="btn close-btn" onclick="closeCamera()">× Close</button>
+        </div>
+        <img class="video-feed" id="videoFeed" alt="Camera Feed">
+    </div>
+
+    <main class="container">
+        <section class="upload-section">
+            <h1>Image Object Detection</h1>
+            <form method="post" enctype="multipart/form-data" action="/detect" onsubmit="this.classList.add('uploading')">
+                <div class="upload-box" onclick="this.parentNode.querySelector('input[type=file]').click()">
+                    <span>📁 Click to upload image</span>
+                    <input type="file" name="file" accept="image/*" hidden 
+                        onchange="this.parentNode.querySelector('span').textContent = this.files[0].name">
+                </div>
+                <button class="btn detect-btn" type="submit">
+                    <span class="button-text">Analyze Image</span>
+                </button>
+            </form>
+        </section>
+
+        {% if input_image %}
+        <section class="results-section">
+            <div class="result-card">
+                <h2>Original Image</h2>
+                <img src="/static/{{ input_image }}" alt="Input">
+            </div>
+            
+            <div class="result-card">
+                <h2>Detection Results</h2>
+               <img src="/static/{{ output_image }}" alt="Output">
+                <div class="detections">
+                    {% for detection in detections %}
+                    <div class="detection-item">
+                        <span class="label">{{ detection.split(':')[0] }}</span>
+                        <span class="confidence">{{ detection.split(':')[1] }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </section>
+        {% endif %}
+    </main>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
